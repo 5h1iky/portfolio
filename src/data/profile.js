@@ -97,10 +97,11 @@ export const projects = [
   {
     name: 'osu! 谱面',
     subname: 'beatmapping',
-    summary: '两张从零做的谱面，包含标准模式与 7K 键位，已在 osu! 官网可玩。',
-    description:
-      '自己选曲、对节奏、排难度线。两张都担任主谱师，覆盖从简单到 Extra 的多个难度，其中 Ravings 那套额外做了完整的 7K 键位版本。',
-    tags: ['osu!', '谱面设计', '节奏对时', '7K'],
+    summary: '两张 osu! 谱面，已在 osu! 官网可玩。',
+    // 备注：这里刻意不写"怎么做的"，因为那属于猜测。
+    // 想补上真实过程（选曲是不是自己定的、花了多久、有没有人帮忙）随时加。
+    description: '',
+    tags: ['osu!', '谱面设计'],
     version: '',
     license: '',
     links: [
@@ -108,10 +109,29 @@ export const projects = [
       { label: 'Ravings', href: 'https://osu.ppy.sh/beatmapsets/2584217' },
     ],
     highlights: [
-      '月が綺麗ねと言われたい！：5 个难度，BPM 160，含 4K 键位',
-      'Ravings：10 个难度，BPM 135，含完整 7K 键位',
-      '曲目来自 Yuta Kakizaki 与 HOYO-MiX',
-      '点下面的链接可以在 osu! 官网直接下载游玩',
+      '月が綺麗ねと言われたい！：5 个难度 · BPM 160',
+      'Ravings：10 个难度 · BPM 135',
+    ],
+    screenshots: [],
+  },
+
+  {
+    name: '冰与火之舞关卡',
+    subname: 'ADOFAI',
+    summary: '16 个自制关卡，2023 - 2026 年陆续制作。',
+    description: '',
+    tags: ['冰与火之舞', '关卡设计', '节奏对时'],
+    version: '',
+    license: '',
+    links: [
+      // 这一条跳到下载区，方便直接下载
+      { label: '全部关卡下载', href: '#downloads' },
+    ],
+    highlights: [
+      '共 16 个关卡，每个包含关卡文件、音频与图片素材',
+      '曲目包括 アイドル、ラビットホール、うそつきマカロン 等',
+      '2024 年 2 月到 4 月间完成 11 个',
+      '每个包都在 100 MB 以内，逐一打包上传',
     ],
     screenshots: [],
   },
@@ -143,22 +163,31 @@ export const downloads = {
       // GitHub 会自动改写上传的文件名（空格变点、去掉括号等），
       // 所以最保险的做法是：上传时就用英文小写加连字符命名，例如 my-level.zip
       items: [
-        { name: 'snooze', size: '90.3 MB', file: 'snooze.zip' },
-        { name: 'track', size: '49.3 MB', file: 'track.zip' },
-        { name: '今年も「雪降り、メリクリ」目指して頑張ります！！', size: '38.7 MB', file: 'yuki-meri-kuri.zip' },
-        { name: '说谎的马卡龙', size: '33.8 MB', file: 'usotsuki-macaron.zip' },
-        { name: 'アイドル', size: '15.8 MB', file: 'idol.zip' },
-        { name: 'K.Moe', size: '14.2 MB', file: 'K.Moe.zip' },
-        { name: 'lorelei', size: '13.8 MB', file: 'lorelei.zip' },
-        { name: 'freys', size: '12.0 MB', file: 'freys.zip' },
-        { name: 'Fractured Angel', size: '11.6 MB', file: 'Fractured.Angel.zip' },
-        { name: 'miko skip', size: '10.3 MB', file: 'miko.skip.zip' },
-        { name: 'rabbit', size: '9.7 MB', file: 'rabbit.zip' },
-        { name: 'TECHNOPOLIS 2085', size: '8.8 MB', file: 'TECHNOPOLIS.2085.zip' },
-        { name: '520am', size: '7.4 MB', file: '520am.zip' },
-        { name: 'anybody can find love (except you.)', size: '6.9 MB', file: 'anybody.can.find.love.except.you.zip' },
-        { name: 'lozy', size: '3.5 MB', file: 'lozy.zip' },
-        { name: 'muspelheim', size: '2.7 MB', file: 'muspelheim.zip' },
+        { name: 'snooze', size: '90.3 MB', date: '2024-02-07', file: 'snooze.zip' },
+        { name: 'track', size: '49.3 MB', date: '2024-02-16', file: 'track.zip' },
+        { name: '今年も「雪降り、メリクリ」目指して頑張ります！！', size: '38.7 MB', date: '2024-04-05', file: 'yuki-meri-kuri.zip' },
+        { name: '说谎的马卡龙', size: '33.8 MB', date: '2026-02-14', file: 'usotsuki-macaron.zip' },
+        { name: 'アイドル', size: '15.8 MB', date: '2023-08-03', file: 'idol.zip' },
+        { name: 'K.Moe', size: '14.2 MB', date: '2024-02-17', file: 'K.Moe.zip' },
+        { name: 'lorelei', size: '13.8 MB', date: '2023-07-20', file: 'lorelei.zip' },
+        { name: 'freys', size: '12.0 MB', date: '2023-10-15', file: 'freys.zip' },
+        { name: 'Fractured Angel', size: '11.6 MB', date: '2024-02-16', file: 'Fractured.Angel.zip' },
+        { name: 'miko skip', size: '10.3 MB', date: '2024-02-16', file: 'miko.skip.zip' },
+        { name: 'rabbit', size: '9.7 MB', date: '2024-03-23', file: 'rabbit.zip' },
+        { name: 'TECHNOPOLIS 2085', size: '8.8 MB', date: '2024-02-17', file: 'TECHNOPOLIS.2085.zip' },
+        { name: '520am', size: '7.4 MB', date: '2024-04-05', file: '520am.zip' },
+        { name: 'anybody can find love (except you.)', size: '6.9 MB', date: '2023-11-26', file: 'anybody.can.find.love.except.you.zip' },
+        { name: 'lozy', size: '3.5 MB', date: '2024-04-05', file: 'lozy.zip' },
+        { name: 'muspelheim', size: '2.7 MB', date: '2023-07-07', file: 'muspelheim.zip' },
+      ],
+      topics: [
+        'アイドル（YOASOBI）',
+        'ラビットホール（DECO*27）',
+        'うそつきマカロン（暴飲暴食P feat. 重音テト）',
+        'Miko Skip（Kirara Magic）',
+        'TECHNOPOLIS 2085（PRASTIK DANCEFLOOR）',
+        'K.Moe（ZxNX）',
+        "Frey's Philosophy（Powerless）",
       ],
     },
     {

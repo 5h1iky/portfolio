@@ -62,8 +62,13 @@ export default function Downloads() {
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">
                       {item.name}
                     </span>
-                    {item.size ? (
+                    {item.date ? (
                       <span className="text-ink-muted dark:text-ink-muted-dark shrink-0 font-mono text-xs">
+                        {item.date}
+                      </span>
+                    ) : null}
+                    {item.size ? (
+                      <span className="text-ink-muted dark:text-ink-muted-dark w-16 shrink-0 text-right font-mono text-xs">
                         {item.size}
                       </span>
                     ) : null}
@@ -99,6 +104,32 @@ export default function Downloads() {
           </div>
         ))}
       </div>
+
+      {/* 收录曲目（只有配了 topics 的分组才显示） */}
+      {groups.some((g) => g.topics?.length) ? (
+        <div className="border-edge dark:border-edge-dark mt-10 border-t pt-6">
+          {groups
+            .filter((g) => g.topics?.length)
+            .map((g) => (
+              <div key={g.group}>
+                <h4 className="text-ink-soft dark:text-ink-soft-dark mb-3 text-sm font-medium">
+                  部分收录曲目
+                </h4>
+                <ul className="grid gap-1.5 sm:grid-cols-2">
+                  {g.topics.map((t) => (
+                    <li
+                      key={t}
+                      className="text-ink-muted dark:text-ink-muted-dark flex gap-2.5 text-xs leading-relaxed"
+                    >
+                      <span className="grad-bg mt-1.5 h-1 w-1 shrink-0 rounded-full" />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+        </div>
+      ) : null}
 
       {downloads.footer ? (
         <p className="text-ink-muted dark:text-ink-muted-dark border-edge dark:border-edge-dark mt-10 border-t pt-5 text-xs leading-relaxed">
