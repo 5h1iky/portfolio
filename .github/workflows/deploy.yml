@@ -1,0 +1,75 @@
+# ============================================================================
+#  自动构建 + 发布到 GitHub Pages
+#
+#  你以后的工作流程（不需要登录网页）：
+#     1. 改 src/data/profile.js 里的内容
+#     2. 本地跑 .\dev.ps1 看一眼效果
+#     3. 在这个窗口里执行三行：
+#          git add -A
+#          git commit -m "更新内容"
+#          git push
+#     4. 等 1-2 分钟，网站自动更新
+#
+#  查看构建进度/失败原因：
+#     gh run list          （列出最近的构建）
+#     gh run watch         （实时看进度）
+#
+#  ⚠️ 这个文件一般不用改。
+# ============================================================================
+
+name: 构建并发布到 Pages
+
+on:
+  push:
+    branches: [main]
+  # 也可以在网页或命令行手动触发一次
+  workflow_dispatch:
+
+# GITHUB_TOKEN 需要的最小权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同时只跑一个发布任务；新的推送会取消排队中的旧任务
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 准备 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建
+        run: npm run build
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 发布
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 下面这两行的文字改这里，改完刷新页面就生效 -->
+    <title>5h1iky · 作品集</title>
+    <meta name="description" content="5h1iky 的个人作品集" />
+
+    <!-- 手机浏览器地址栏的颜色，跟着网站背景走 -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#09090b" />
+
+    <script>
+      // 在任何内容渲染之前，先根据系统设置挂上 dark 类。
+      // 作用是避免深色模式用户看到一瞬间的白色闪屏。
+      // 优先读 localStorage 是为了给「以后加手动切换按钮」留好位置——
+      // 现在没有切换 UI，所以实际总是跟随系统。
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('theme')
+          var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+          document.documentElement.classList.toggle('dark', dark)
+        } catch (e) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,142 @@
+/* ============================================================================
+   ★ 全站视觉设置都在这个文件里 ★
+
+   你不需要懂 React。想改网站长相，改下面这些值就行，改完全站立刻生效。
+
+   最常改的三个地方：
+     ① 紫色 → 搜「品牌色」，改 --color-brand-* 的色值
+     ② 蓝色 → 搜「品牌色」，改 --color-accent-* 的色值
+     ③ 圆角 → 搜「圆角」，改 --radius-card（卡片圆角大小）
+
+   色值格式是 #RRGGBB（十六进制）。想找颜色可以去搜「颜色选择器」，
+   随便挑一个，把 # 开头的六位字符复制过来替换即可。
+   ============================================================================ */
+
+@import 'tailwindcss';
+
+/* 让 dark: 前缀跟着 <html class="dark"> 走（跟随系统，见 index.html） */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* ── 字体 ──────────────────────────────────────────────────────────
+     优先用系统自带字体，所以网站上不加载任何网络字体，打开就是满速。 */
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC',
+    'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
+  --font-mono:
+    ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas,
+    'Courier New', monospace;
+
+  /* ── 品牌色（紫色，主色）───────────────────────────────────────────
+     这是全站出现最多的颜色：标题、按钮、链接、进度条。 */
+  --color-brand-50: #f2f2ff;
+  --color-brand-100: #e6e6ff;
+  --color-brand-200: #d0d0ff;
+  --color-brand-300: #b0b0ff;
+  --color-brand-400: #8f8fff;
+  --color-brand-500: #6366f1; /* ← 主色，改这个最主要 */
+  --color-brand-600: #5457d6;
+  --color-brand-700: #4547ab;
+  --color-brand-800: #383a86;
+  --color-brand-900: #2e2f6b;
+  --color-brand-950: #1d1e42;
+
+  /* ── 品牌色（蓝色，副色）───────────────────────────────────────────
+     和上面的紫色一起组成网站的渐变（紫 → 蓝）。 */
+  --color-accent-300: #c4b5fd;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6; /* ← 副色，改这个最主要 */
+  --color-accent-600: #7c3aed;
+  --color-accent-700: #6d28d9;
+  --color-accent-800: #5b21b6;
+  --color-accent-900: #4c1d95;
+
+  /* ── 圆角 ──────────────────────────────────────────────────────────
+     SAChat 用的是 Material 3 的大圆角卡片，这里跟上。
+     想让卡片更方一点就把 card 改小，想更圆就改大。 */
+  --radius-card: 1rem; /* 卡片圆角 */
+  --radius-chip: 0.5rem; /* 小标签圆角 */
+
+  /* ── 文字颜色（浅色模式）────────────────────────────────────────── */
+  --color-ink: #18181b; /* 主要文字 */
+  --color-ink-soft: #3f3f46; /* 次要文字 */
+  --color-ink-muted: #71717a; /* 更淡的说明文字 */
+
+  /* ── 文字颜色（深色模式）────────────────────────────────────────── */
+  --color-ink-dark: #f4f4f5;
+  --color-ink-soft-dark: #d4d4d8;
+  --color-ink-muted-dark: #a1a1aa;
+
+  /* ── 背景与边框（浅色模式）──────────────────────────────────────── */
+  --color-page: #ffffff; /* 整页背景 */
+  --color-surface: #fafafa; /* 卡片背景 */
+  --color-surface-2: #f4f4f5; /* 卡片里再嵌一层的背景 */
+  --color-edge: #e4e4e7; /* 边框线 */
+
+  /* ── 背景与边框（深色模式）──────────────────────────────────────── */
+  --color-page-dark: #09090b;
+  --color-surface-dark: #131316;
+  --color-surface-2-dark: #1c1c21;
+  --color-edge-dark: #2a2a31;
+}
+
+/* ============================================================================
+   以下是全局样式，一般不用改
+   ============================================================================ */
+
+@layer base {
+  html {
+    /* 点页面内的锚点链接（比如导航栏跳转）时平滑滚动 */
+    scroll-behavior: smooth;
+    /* 导航栏是吸顶的，滚动定位时留出它的高度，避免标题被挡住 */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    /* 浅色模式下的整页背景和文字色 */
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 深色模式覆盖 */
+  .dark body {
+    background-color: var(--color-page-dark);
+    color: var(--color-ink-dark);
+  }
+
+  /* 尊重系统的「减少动态效果」设置：开了就不做动画 */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* 紫 → 蓝渐变文字，用在名字和标题上 */
+@utility grad-text {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-brand-500),
+    var(--color-accent-500)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* 紫 → 蓝渐变背景，用在按钮和色条上 */
+@utility grad-bg {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-brand-500),
+    var(--color-accent-500)
+  );
+}
