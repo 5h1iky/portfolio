@@ -44,6 +44,22 @@ git push
 
 等 1–2 分钟，网站自动更新。**不需要在本地跑 `npm run build`**，构建在 GitHub 上做。
 
+> ⚠️ **推之前确认加速器开着。**
+> 实测过：加速器没开时 `git push` 会失败，报
+> `Failed to connect to github.com:443 ... Could not connect to server`，
+> 超时约 21 秒。有意思的是同一时刻 `api.github.com` 是通的（`gh` 能用），
+> 只有 `github.com` 的 HTTPS 连不上——所以"`gh` 能用"不代表"`git push` 能用"。
+>
+> **更要紧的是：`git push` 失败时屏幕上的输出很少**，
+> 如果用 `| Select-String` 之类过滤输出，很容易看漏，误以为推成功了。
+> **推完务必确认这一行状态**：
+>
+> ```powershell
+> git status -sb
+> # 显示 "## main...origin/main"           = 已同步 ✅
+> # 显示 "## main...origin/main [ahead 1]" = 还没推上去 ❌
+> ```
+
 查看构建进度：
 
 ```powershell
