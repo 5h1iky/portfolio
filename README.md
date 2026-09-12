@@ -2,7 +2,7 @@
 
 > 项目位置：`D:\www\portfolio`
 > 创建时间：2026-09-12
-> 当前状态：**首版已完成，本地可运行（`http://localhost:5173`）**
+> 当前状态：**已上线 → https://5h1iky.github.io/portfolio/**
 
 ---
 
@@ -10,7 +10,7 @@
 
 一个静态的个人作品集网站，用于展示制作者的项目作品。
 
-**网站已经能跑了。** 现在改文字、加作品都不需要懂 React——
+**网站已经能跑了，而且已经发布到公网。** 改文字、加作品都不需要懂 React——
 所有内容集中在 `src/data/profile.js` 一个文件里，改法见 **[docs/EDITING.md](docs/EDITING.md)**。
 
 ---
@@ -20,8 +20,9 @@
 | 文件 | 作用 | 什么时候看 |
 |---|---|---|
 | **[docs/EDITING.md](docs/EDITING.md)** | **怎么改内容、怎么加作品** | **想改网站内容时看这个** |
+| **[docs/DEPLOY.md](docs/DEPLOY.md)** | **怎么把改动发布上线** | **改完想更新网站时看这个** |
 | **[docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)** | 需求：要做什么、已拍板的决定 | 想知道"为什么这样设计"时看 |
-| **[docs/TECH_PLAN.md](docs/TECH_PLAN.md)** | 方案：技术选型、环境现状、部署选项 | 准备部署时看 |
+| **[docs/TECH_PLAN.md](docs/TECH_PLAN.md)** | 方案：技术选型、环境现状 | 想了解技术细节时看 |
 | **[docs/HANDOFF.md](docs/HANDOFF.md)** | 交接：新会话怎么快速接手 | 新开工作区时看 |
 
 ---
@@ -36,7 +37,20 @@ cd D:\www\portfolio
 然后浏览器打开 **http://localhost:5173**
 
 > ⚠️ **必须用 `.\dev.ps1`，不要直接敲 `npm run dev`**——
-> 脚本会把临时目录重定向到 D 盘，保护你只剩 13 GB 的 C 盘。
+> 脚本会把临时目录重定向到 D 盘，保护你只剩 13.3 GB 的 C 盘。
+
+---
+
+## 改完内容怎么上线
+
+```powershell
+git add -A
+git commit -m "更新内容"
+git push
+```
+
+等 1–2 分钟，https://5h1iky.github.io/portfolio/ 自动更新。
+**不需要本地构建，也不需要登录 GitHub 网页**（原理见 `docs/DEPLOY.md`）。
 
 ---
 
@@ -91,11 +105,11 @@ D:\www\portfolio\
 
 ## 下一步
 
-首版已完成并通过实测。接下来可以做：
+网站已上线并通过线上实测。接下来可以做：
 
-1. **看实物提意见** —— 打开 http://localhost:5173，觉得哪里不对就说
-2. **补内容** —— 改 `src/data/profile.js`（改法见 `docs/EDITING.md`）
+1. **看实物提意见** —— 打开 https://5h1iky.github.io/portfolio/ ，觉得哪里不对就说
+2. **补内容** —— 改 `src/data/profile.js`（改法见 `docs/EDITING.md`），然后 `git push`
 3. **决定 B站/osu! 两个昵称怎么统一显示**（现在各按平台原名：「明日awo」/「5h1iky」）
-4. **满意后再讨论部署** —— 方案见 `TECH_PLAN.md` 第 5 节
+4. **要不要加自定义域名**（现在用的是 `5h1iky.github.io/portfolio/` 这个免费地址）
 
 **不需要再问的问题**：需求第 3 节的 10 项已全部拍板。
