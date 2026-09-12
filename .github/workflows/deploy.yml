@@ -47,7 +47,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          # ⚠️ 这里故意不开启 npm 缓存（不要加 cache: npm）。
+          # 原因：setup-node 的缓存后置步骤在某些仓库上会失败，
+          # 而它一失败就会把整个 build 任务判为失败，导致 deploy 被跳过——
+          # 明明构建和上传都成功了，网站却发不出去。
+          # 我们的构建只要几秒，缓存带来的收益远小于这个风险。
 
       - name: 安装依赖
         run: npm ci
