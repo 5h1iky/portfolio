@@ -43,11 +43,22 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // 手机菜单展开时锁住页面滚动。
+  // 不锁的话，菜单面板会盖在 Hero 的文字上露出半截，看起来像布局坏了。
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled
-          ? 'bg-page/80 dark:bg-page-dark/80 border-edge dark:border-edge-dark border-b backdrop-blur-lg'
+        scrolled || open
+          ? 'bg-page/95 dark:bg-page-dark/95 border-edge dark:border-edge-dark border-b backdrop-blur-lg'
           : 'border-b border-transparent'
       }`}
     >
@@ -86,26 +97,41 @@ export default function Nav() {
         </button>
       </div>
 
-      {/* 手机端：展开的菜单 */}
+      {/* 手机端：展开的菜单
+          菜单下方再加一层半透明遮罩，点它就收起。
+          作用是让"菜单已打开"这件事看起来是有意为之，
+          而不是像页面被什么东西盖住了。 */}
       {open ? (
-        <div className="bg-page/95 dark:bg-page-dark/95 border-edge dark:border-edge-dark border-b backdrop-blur-lg sm:hidden">
-          <nav className={`${SECTION_WRAP} flex flex-col py-2`}>
-            {sections.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => setOpen(false)}
-                className={`py-3 text-sm ${
-                  active === item.id
-                    ? 'text-brand-600 dark:text-brand-300 font-medium'
-                    : 'text-ink-soft dark:text-ink-soft-dark'
-                }`}
-              >
-                {item.title}
-              </a>
-            ))}
-          </nav>
-        </div>
+        <>
+          {/* relative + z-10 必须保留：
+              下面的遮罩是 fixed inset-0，会盖到这一层上面。
+              不加的话菜单里的文字会被 backdrop-blur 糊成一片灰块。 */}
+          <div className="bg-page/95 dark:bg-page-dark/95 border-edge dark:border-edge-dark relative z-10 border-b backdrop-blur-lg sm:hidden">
+            <nav className={`${SECTION_WRAP} flex flex-col py-2`}>
+              {sections.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={() => setOpen(false)}
+                  className={`py-3 text-sm ${
+                    active === item.id
+                      ? 'text-brand-600 dark:text-brand-300 font-medium'
+                      : 'text-ink-soft dark:text-ink-soft-dark'
+                  }`}
+                >
+                  {item.title}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          {/* 遮罩：铺满菜单以下的所有区域 */}
+          <div
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+            className="bg-page/70 dark:bg-page-dark/80 fixed inset-0 top-20 backdrop-blur-sm sm:hidden"
+          />
+        </>
       ) : null}
     </header>
   )
