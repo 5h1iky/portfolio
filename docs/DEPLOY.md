@@ -128,7 +128,8 @@ npx vite preview --base /portfolio/
 4. **`leading-none` 会把渐变文字的下伸部裁掉**。
    `grad-text` 用 `background-clip: text`，渐变被裁到行盒范围内。
    行高 = 1×字号（60px）时字形实际需要 76px，`y` 的尾巴就被水平切平。
-   大字号渐变文字**必须留足行高**（现用 1.3 倍）。改 `Hero.jsx` 时别把这行删了。
+   大字号渐变文字**必须留足行高**（现用 **1.3 倍**，见 `Hero.jsx` 里 h1 的注释）。
+   改 `Hero.jsx` 时别把 `leading-[1.3]` 删了。
 5. **不要用 `Start-Process` 起长驻进程**。
    用 `Start-Process -WindowStyle Hidden npx ...` 会在 Windows 上弹出
    `npx.ps1` 命令行窗口，而且进程脱离管理、忘了关就一直占着端口。
@@ -148,7 +149,7 @@ npx vite preview --base /portfolio/
 | Linux | Noto Sans / DejaVu Sans |
 
 **副作用**：不同系统上字形宽度和下伸部高度略有不同。
-所以大字号渐变文字的行高特意留了余量（1.3 倍而不是刚好够的 1.25 倍），
+所以大字号渐变文字的行高特意留了余量（用 1.3 倍，而不是刚好够的 1.25 倍），
 避免在字形下伸部更大的系统上被裁。
 
 如果你想要**所有平台长得完全一样**，可以把 `src/index.css` 里的
