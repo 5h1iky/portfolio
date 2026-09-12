@@ -125,3 +125,32 @@ npx vite preview --base /portfolio/
 3. **`gh` 在 PowerShell 里参数容易被吃掉**（逗号、括号、转义符）。
    遇到 `accepts at most 1 arg(s)` 这类报错时，改成
    `gh api xxx > out.json` 再用 PowerShell 解析 JSON，别硬拼命令行。
+4. **`leading-none` 会把渐变文字的下伸部裁掉**。
+   `grad-text` 用 `background-clip: text`，渐变被裁到行盒范围内。
+   行高 = 1×字号（60px）时字形实际需要 76px，`y` 的尾巴就被水平切平。
+   大字号渐变文字**必须留足行高**（现用 1.3 倍）。改 `Hero.jsx` 时别把这行删了。
+5. **不要用 `Start-Process` 起长驻进程**。
+   用 `Start-Process -WindowStyle Hidden npx ...` 会在 Windows 上弹出
+   `npx.ps1` 命令行窗口，而且进程脱离管理、忘了关就一直占着端口。
+   **长驻命令一律用受管的后台任务启动**，用完明确结束。
+
+---
+
+## 关于 `system-ui` 字体
+
+网站的字体栈第一项是 `system-ui`，意思是"用访问者系统自带的界面字体"：
+
+| 系统 | 实际用的字体 |
+|---|---|
+| Windows | Segoe UI |
+| macOS | San Francisco |
+| Android | Roboto |
+| Linux | Noto Sans / DejaVu Sans |
+
+**副作用**：不同系统上字形宽度和下伸部高度略有不同。
+所以大字号渐变文字的行高特意留了余量（1.3 倍而不是刚好够的 1.25 倍），
+避免在字形下伸部更大的系统上被裁。
+
+如果你想要**所有平台长得完全一样**，可以把 `src/index.css` 里的
+`--font-sans` 第一项从 `system-ui` 换成一个网络字体或本地固定字体，
+但那样会增加外部请求（或需要把字体文件放进项目里）。
