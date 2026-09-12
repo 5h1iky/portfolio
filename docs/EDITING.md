@@ -168,6 +168,67 @@ osuStats: {
 
 ---
 
+## 怎么加一个可下载的文件
+
+关卡包和大文件**不存在网站仓库里**，而是放在 GitHub Releases 上（这样网站本身很轻，clone 也快）。
+
+**步骤**：
+
+1. 上传文件到 release：https://github.com/5h1iky/portfolio/releases/tag/adofai-levels
+2. 打开 `src/data/profile.js`，搜 `downloads`
+3. 在对应的 `items` 里加一行：
+
+```js
+{ name: '显示的名字', size: '10.3 MB', file: 'GitHub上的真实文件名.zip' },
+```
+
+> ⚠️ **`file` 必须写 GitHub 上的真实文件名，不是你电脑里的名字。**
+>
+> **GitHub 会自动改写上传的文件名**：空格变成点、去掉括号和感叹号。
+> 实测例子：
+>
+> | 你电脑里的名字 | 传到 GitHub 后变成 |
+> |---|---|
+> | `miko skip.zip` | `miko.skip.zip` |
+> | `Fractured Angel.zip` | `Fractured.Angel.zip` |
+> | `TECHNOPOLIS 2085..zip` | `TECHNOPOLIS.2085.zip` |
+> | `anybody can find love (except you.).zip` | `anybody.can.find.love.except.you.zip` |
+> | **纯中文/日文名（如 `アイドル.zip`）** | **`default.zip`（名字全丢！）** |
+>
+> **最保险的做法：上传前先把文件名改成英文小写加连字符**，例如
+> `usotsuki-macaron.zip`、`idol.zip`、`yuki-meri-kuri.zip`。
+> 这样 GitHub 不会改写，链接永远不会失效。
+> 页面上显示的名字照旧写中文（`name` 字段），不影响。
+
+4. 保存 → 页面立刻生效，不用重启
+
+**换托管平台**（比如改用蓝奏云）只需改 `downloads.releaseBase` 一行，
+或者在每一项里把 `file` 写成完整网址。
+
+---
+
+## 怎么调整区块顺序 / 导航
+
+打开 `src/data/profile.js`，最上面的 `sections` 数组：
+
+```js
+export const sections = [
+  { id: 'top', type: 'hero', title: '首页' },
+  { id: 'projects', type: 'projects', title: '作品' },
+  { id: 'downloads', type: 'downloads', title: '下载' },
+  { id: 'about', type: 'about', title: '关于' },
+  { id: 'contact', type: 'contact', title: '联系' },
+]
+```
+
+- **调整顺序**：把整行上下移动
+- **改导航上显示的字**：改 `title`
+- **临时藏掉一个区块**：整行前面加 `//`
+
+**导航栏是从这个数组自动生成的，不用改任何组件代码。** 手机端会自动折叠成汉堡菜单。
+
+---
+
 ## 几个要知道的小事
 
 - **改了 `vite.config.js`（端口、忽略规则那些）需要重启服务器**才生效，
@@ -175,6 +236,10 @@ osuStats: {
 - **作品截图建议控制在 500 KB 以内**。手机截图原图动辄 1 MB，
   现在这四张加起来约 2.2 MB，因为做了懒加载所以不影响打开速度，
   但以后加图多了建议先用画图工具缩小到 800px 宽再放进来。
+- **验证下载链接是否还有效**：在项目目录执行
+  `node --use-system-ca tools\check-links.mjs`
+  （`--use-system-ca` 不能省。这台机器有代理/VPN 做证书拦截，
+  Node 自带的 CA 列表会报 `UNABLE_TO_VERIFY_LEAF_SIGNATURE`。）
 
 ---
 
