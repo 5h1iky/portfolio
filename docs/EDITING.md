@@ -229,6 +229,44 @@ export const sections = [
 
 ---
 
+## ⚠️ 加内容时最容易踩的坑：整页被顶宽（手机上尤其明显）
+
+**症状**：手机上页面能左右拖动、内容超出屏幕。电脑上看不出来，所以很容易漏掉。
+
+**原因**：CSS 网格（grid）的每一项默认 `min-width: auto`，
+意思是"**内容有多宽我就多宽，不肯收缩**"。
+所以只要卡片里有一行放不下（比如"名字 + 日期 + 大小"三列挤在一起），
+它就会把整页顶宽，而不是让文字用省略号截断。
+
+**修法**：网格列写成 `grid-cols-[minmax(0,1fr)]`，**不要只写 `grid-cols-1`**。
+
+```jsx
+// ❌ 手机上会溢出
+<div className="grid gap-2 sm:grid-cols-2">
+
+// ✅ 不会溢出
+<div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
+```
+
+同时给卡片本身加 `min-w-0`：
+
+```jsx
+const base = 'group flex min-w-0 items-center gap-3 rounded-xl border px-4 py-3'
+```
+
+这个写法已经在 `Downloads.jsx`、`Contact.jsx` 里用上了。
+**你以后新加多列布局，记得照抄。**
+
+**自查方法**：手机宽度下在浏览器控制台（F12）执行：
+
+```js
+document.documentElement.scrollWidth > document.documentElement.clientWidth
+```
+
+返回 `true` 就是溢出了，正常应该是 `false`。
+
+---
+
 ## 几个要知道的小事
 
 - **改了 `vite.config.js`（端口、忽略规则那些）需要重启服务器**才生效，

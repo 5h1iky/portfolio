@@ -11,7 +11,8 @@ export default function Projects() {
       <SectionHeading title="作品" />
 
       {projects?.length ? (
-        <div className="space-y-8">
+        // min-w-0：卡片里的长文本（曲名、链接标签）不要顶宽整页
+        <div className="min-w-0 space-y-8">
           {projects.map((project) => (
             <ProjectCard key={project.name} project={project} />
           ))}

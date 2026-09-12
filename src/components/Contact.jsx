@@ -21,7 +21,8 @@ export default function Contact() {
       <SectionShell id="contact">
         <SectionHeading title={contacts.title} />
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        {/* minmax(0,1fr)：让列可以被压窄，避免长内容顶宽整页（详见 Downloads.jsx 的说明） */}
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-3">
           {contacts.items?.map((item) => (
             <a
               key={item.href}

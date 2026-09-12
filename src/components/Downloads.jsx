@@ -47,8 +47,12 @@ export default function Downloads() {
               </p>
             ) : null}
 
-            {/* 下载卡片 */}
-            <div className="grid gap-2 sm:grid-cols-2">
+            {/* 下载卡片
+                ⚠️ grid-cols-[minmax(0,1fr)] 里的 minmax(0,…) 不能简化成 1fr。
+                CSS 网格项默认 min-width:auto，内容再长也不肯收缩；
+                卡片里的固定宽度列（日期、大小）会把网格列顶宽，导致整页横向溢出。
+                用 minmax(0,1fr) 列才能被压窄，文字才会走省略号。 */}
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
               {g.items?.map((item) => {
                 const href = linkFor(item)
 
@@ -76,7 +80,7 @@ export default function Downloads() {
                 )
 
                 const base =
-                  'group flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors'
+                  'group flex min-w-0 items-center gap-3 rounded-xl border px-4 py-3 transition-colors'
 
                 // 没有 file 的显示成灰色不可点，避免死链
                 return href ? (
