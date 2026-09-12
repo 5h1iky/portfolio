@@ -35,8 +35,16 @@ export default function Hero() {
           {hero.tagline}
         </div>
 
-        {/* 名字，紫蓝渐变大字 */}
-        <h1 className="grad-text text-4xl font-bold tracking-tight sm:text-6xl">
+        {/* 名字，紫蓝渐变大字
+            ⚠️ 行高必须留足，不要改成 leading-none。
+            原因：grad-text 用的是 background-clip: text，渐变会被裁到行盒范围内。
+            而默认行高（1×字号）比字形还矮——字号 60px 时字形实际需要约 76px
+            （含 y 这类字母的下伸部），行盒只有 60px，于是「y」的尾巴会被水平切掉。
+            实测：1.25 倍行高时基线下留 15px，正好够 Windows 的 system-ui；
+            但 system-ui 在不同系统解析成不同字体（Windows=Segoe UI，
+            macOS=SF，Linux=Noto/DejaVu），Linux 字体的下伸部更大，
+            所以这里用 1.3 倍多留一点余量，保证任何系统上都不裁。 */}
+        <h1 className="grad-text text-4xl leading-[1.3] font-bold tracking-tight sm:text-6xl">
           {hero.name}
         </h1>
 
