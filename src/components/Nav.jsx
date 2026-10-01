@@ -1,25 +1,28 @@
 import { useEffect, useState } from 'react'
-import { hero, sections } from '../data/profile.js'
+import { hero, sections, contacts } from '../data/profile.js'
 import Icon from './Icon.jsx'
-import { SECTION_WRAP } from './Section.jsx'
 
 /* 顶部导航栏。
 
    ⚠️ 菜单项不用改这个文件！
    导航是从 src/data/profile.js 的 sections 数组自动生成的。
-   想改名字 / 顺序 / 增减区块，去改那个数组。
+   想改名字 / 顺序 / 增减区块，去改那个数组（nav 字段是导航上的短名）。
 
-   这个组件负责三件事：
+   这个组件负责四件事：
      1. 从 sections 生成菜单
      2. 手机端折叠成汉堡菜单
-     3. 滚动时高亮当前所在区块 */
+     3. 滚动时高亮当前所在区块
+     4. 滚动过一点之后加毛玻璃底和一条发丝下边框 */
+
+// 取 GitHub 那条联系方式当导航右侧的入口（找不到就不显示）
+const GITHUB = contacts.items?.find((c) => c.platform === 'GitHub')
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState('')
 
-  // 往下滚动一点之后，导航栏加毛玻璃背景和描边
+  // 往下滚动一点之后，导航栏加毛玻璃背景和发丝下边框
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
     onScroll()
@@ -34,7 +37,7 @@ export default function Nav() {
       let current = ''
       for (const id of ids) {
         const el = document.getElementById(id)
-        if (el && el.getBoundingClientRect().top <= 120) current = id
+        if (el && el.getBoundingClientRect().top <= 96) current = id
       }
       setActive(current)
     }
@@ -44,9 +47,9 @@ export default function Nav() {
   }, [])
 
   // 手机菜单展开时锁住页面滚动。
-  // 不锁的话，菜单面板会盖在 Hero 的文字上露出半截，看起来像布局坏了。
+  // 不锁的话，菜单面板会盖在首屏文字上露出半截，看起来像布局坏了。
   useEffect(() => {
-    if (!open) return
+    if (!open) return undefined
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
@@ -56,34 +59,49 @@ export default function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-200 ${
         scrolled || open
-          ? 'bg-page/95 dark:bg-page-dark/95 border-edge dark:border-edge-dark border-b backdrop-blur-lg'
+          ? 'bg-ground/85 border-hair border-b backdrop-blur-md'
           : 'border-b border-transparent'
       }`}
     >
-      <div className={`${SECTION_WRAP} flex h-16 items-center justify-between`}>
+      <div className="shell flex h-14 items-center gap-4">
         {/* 左边的名字，点了回到顶部 */}
-        <a href="#top" className="grad-text text-base font-semibold tracking-tight">
+        <a href="#top" className="text-small shrink-0 font-semibold tracking-tight">
           {hero.name}
         </a>
 
-        {/* 电脑端：横排菜单。区块多了会自动排开，不用改代码 */}
-        <nav className="hidden items-center gap-1 sm:flex">
+        {/* 电脑端：横排菜单。区块多了会自动排开，不用改代码。
+            当前区块用"淡底 + 强调色"标出来，不靠加粗（加粗会让整行抖动）。 */}
+        <nav className="ml-auto hidden items-center gap-0.5 sm:flex" aria-label="页面导航">
           {sections.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
-              className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+              aria-current={active === item.id ? 'true' : undefined}
+              className={`text-small rounded-sm px-2.5 py-1.5 transition-colors duration-150 ${
                 active === item.id
-                  ? 'text-brand-600 dark:text-brand-300 bg-surface-2 dark:bg-surface-2-dark font-medium'
-                  : 'text-ink-soft dark:text-ink-soft-dark hover:text-ink dark:hover:text-ink-dark hover:bg-surface-2 dark:hover:bg-surface-2-dark'
+                  ? 'bg-accent-wash text-accent'
+                  : 'text-fg-soft hover:text-fg'
               }`}
             >
-              {item.title}
+              {item.nav || item.title}
             </a>
           ))}
         </nav>
+
+        {/* 右边的 GitHub 入口（只在电脑端显示） */}
+        {GITHUB ? (
+          <a
+            href={GITHUB.href}
+            target="_blank"
+            rel="noreferrer"
+            className="border-hair text-fg-soft hover:border-fg-muted hover:text-fg hidden shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-small transition-colors duration-150 sm:inline-flex"
+          >
+            <Icon name="github" className="h-3.5 w-3.5" />
+            <span className="num">{GITHUB.handle}</span>
+          </a>
+        ) : null}
 
         {/* 手机端：汉堡按钮 */}
         <button
@@ -91,7 +109,7 @@ export default function Nav() {
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? '关闭菜单' : '打开菜单'}
           aria-expanded={open}
-          className="text-ink-soft dark:text-ink-soft-dark hover:bg-surface-2 dark:hover:bg-surface-2-dark -mr-2 rounded-lg p-2 transition-colors sm:hidden"
+          className="text-fg-soft hover:text-fg -mr-2 ml-auto rounded-md p-2 transition-colors duration-150 sm:hidden"
         >
           <Icon name={open ? 'close' : 'menu'} />
         </button>
@@ -106,22 +124,34 @@ export default function Nav() {
           {/* relative + z-10 必须保留：
               下面的遮罩是 fixed inset-0，会盖到这一层上面。
               不加的话菜单里的文字会被 backdrop-blur 糊成一片灰块。 */}
-          <div className="bg-page/95 dark:bg-page-dark/95 border-edge dark:border-edge-dark relative z-10 border-b backdrop-blur-lg sm:hidden">
-            <nav className={`${SECTION_WRAP} flex flex-col py-2`}>
+          <div className="bg-ground/95 border-hair menu-in relative z-10 border-b backdrop-blur-md sm:hidden">
+            <nav className="shell flex flex-col py-1.5">
               {sections.map((item) => (
                 <a
                   key={item.id}
                   href={`#${item.id}`}
                   onClick={() => setOpen(false)}
-                  className={`py-3 text-sm ${
-                    active === item.id
-                      ? 'text-brand-600 dark:text-brand-300 font-medium'
-                      : 'text-ink-soft dark:text-ink-soft-dark'
+                  className={`flex items-center justify-between py-3 text-small ${
+                    active === item.id ? 'text-accent' : 'text-fg-soft'
                   }`}
                 >
-                  {item.title}
+                  {item.nav || item.title}
+                  <Icon name="arrowRight" className="text-fg-muted h-3.5 w-3.5" />
                 </a>
               ))}
+
+              {GITHUB ? (
+                <a
+                  href={GITHUB.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setOpen(false)}
+                  className="text-fg-soft border-hair flex items-center gap-2 border-t py-3 text-small"
+                >
+                  <Icon name="github" className="h-3.5 w-3.5" />
+                  <span className="num">{GITHUB.handle}</span>
+                </a>
+              ) : null}
             </nav>
           </div>
 
@@ -129,7 +159,7 @@ export default function Nav() {
           <div
             onClick={() => setOpen(false)}
             aria-hidden="true"
-            className="bg-page/70 dark:bg-page-dark/80 fixed inset-0 top-20 backdrop-blur-sm sm:hidden"
+            className="fade-in fixed inset-0 top-14 bg-black/50 backdrop-blur-sm sm:hidden"
           />
         </>
       ) : null}

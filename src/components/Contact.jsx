@@ -1,15 +1,22 @@
-import { contacts } from '../data/profile.js'
+import { contacts, sections } from '../data/profile.js'
 import Icon from './Icon.jsx'
-import { SectionShell, SectionHeading } from './Section.jsx'
+import Reveal from './Reveal.jsx'
+import { SectionShell, SectionHead, idOf } from './Section.jsx'
 
 /* 联系方式区 + 页脚。
    联系方式和页脚文字在 src/data/profile.js 的 contacts 里改。
-   加一个平台就多一张卡片，删一个就少一张。 */
+   加一个平台就多一行，删一个就少一行。
+
+   ── 为什么不做成三张卡片 ────────────────────────────────────────────
+   三个平台各自一张圆角卡片，看起来像三个并列的功能模块，
+   但这三条其实是同一种信息（去哪找我），排成一行行反而更好扫。
+   所以用发丝横线分行：左边平台名，中间等宽账号，右边一句说明。 */
 
 // 根据平台名自动挑一个图标
 function iconFor(platform) {
   if (platform.includes('GitHub')) return 'github'
   if (platform.includes('osu')) return 'gamepad'
+  if (platform.includes('B站') || platform.includes('bilibili')) return 'music'
   return 'external'
 }
 
@@ -18,46 +25,54 @@ export default function Contact() {
 
   return (
     <>
-      <SectionShell id="contact">
-        <SectionHeading title={contacts.title} />
+      <SectionShell id={idOf(sections, 'contact', 'contact')}>
+        <SectionHead num="04" title={contacts.title} />
 
-        {/* minmax(0,1fr)：让列可以被压窄，避免长内容顶宽整页（详见 Downloads.jsx 的说明） */}
-        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-3">
-          {contacts.items?.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              target="_blank"
-              rel="noreferrer"
-              className="border-edge dark:border-edge-dark bg-surface dark:bg-surface-dark hover:border-brand-400 dark:hover:border-brand-600 group rounded-2xl border p-5 transition-colors"
-            >
-              <div className="text-ink-muted dark:text-ink-muted-dark group-hover:text-brand-500 flex items-center justify-between transition-colors">
-                <Icon name={iconFor(item.platform)} className="h-5 w-5" />
-                <Icon
-                  name="external"
-                  className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100"
-                />
-              </div>
+        <Reveal>
+          <ul className="border-hair border-t">
+            {contacts.items?.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group border-hair-soft hover:bg-raised flex items-center gap-4 border-b py-4 transition-colors duration-150"
+                >
+                  <Icon
+                    name={iconFor(item.platform)}
+                    className="text-fg-muted group-hover:text-accent h-4 w-4 shrink-0 transition-colors duration-150"
+                  />
 
-              <div className="mt-4 text-sm font-medium">{item.platform}</div>
-              <div className="text-ink-soft dark:text-ink-soft-dark mt-0.5 font-mono text-sm">
-                {item.handle}
-              </div>
-              {item.note ? (
-                <div className="text-ink-muted dark:text-ink-muted-dark mt-2 text-xs">
-                  {item.note}
-                </div>
-              ) : null}
-            </a>
-          ))}
-        </div>
+                  <span className="w-16 shrink-0 text-small font-medium">{item.platform}</span>
+
+                  <span className="num text-fg-soft min-w-0 flex-1 truncate text-small">
+                    {item.handle}
+                  </span>
+
+                  {item.note ? (
+                    <span className="text-fg-muted hidden shrink-0 text-small sm:block">
+                      {item.note}
+                    </span>
+                  ) : null}
+
+                  <Icon
+                    name="arrowRight"
+                    className="text-fg-muted group-hover:text-accent h-3.5 w-3.5 shrink-0 transition-all duration-150 group-hover:translate-x-0.5"
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </SectionShell>
 
       {/* ── 页脚 ── */}
-      <footer className="border-edge dark:border-edge-dark border-t">
-        <div className="text-ink-muted dark:text-ink-muted-dark mx-auto flex w-full max-w-5xl flex-col gap-2 px-5 py-8 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <span>{contacts.footerNote.replace('{year}', year)}</span>
-          <span className="font-mono">Vite · React · Tailwind</span>
+      <footer className="border-hair border-t">
+        <div className="shell text-fg-muted flex flex-col gap-2 py-7 sm:flex-row sm:items-center sm:justify-between">
+          <span className="spec">{contacts.footerNote.replace('{year}', year)}</span>
+          <a href="#top" className="spec hover:text-fg-soft transition-colors duration-150">
+            回到顶部 ↑
+          </a>
         </div>
       </footer>
     </>

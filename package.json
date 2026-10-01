@@ -7,7 +7,18 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "qa:page": "node tools/make-qa-page.mjs",
+    "qa:shot": "node tools/screenshot.mjs",
+    "qa:check": "node tools/interaction-check.mjs",
+    "qa:overflow": "node tools/overflow-probe.mjs",
+    "qa:shots": "node tools/inspect-shots.mjs",
+    "qa:perf": "node tools/perf-probe.mjs",
+    "qa:element": "node tools/element-shot.mjs",
+    "check:links": "node tools/check-links.mjs",
+    "check:encoding": "node tools/check-encoding.mjs",
+    "shots:optimize": "python tools/optimize-shots.py",
+    "shots:crop": "python tools/measure-crop.py"
   },
   "dependencies": {
     "react": "^19.1.0",

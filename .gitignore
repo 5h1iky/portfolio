@@ -2,6 +2,14 @@
 node_modules/
 dist/
 
+# 本地临时产物（无头浏览器截图、数据快照等，不提交）
+#   .shots/final/                各个视口的截图，用来肉眼核对改动效果
+#   .shots/research-YYYY-MM-DD/  抓下来的原始数据快照，用来复核页面上的数字
+.shots/
+
+# 从整页长截图切出来的分段预览图（tools/split-preview.py 生成，随时可重建）
+preview/
+
 # 日志
 *.log
 npm-debug.log*

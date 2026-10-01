@@ -1,112 +1,220 @@
 /* ============================================================================
    ★ 全站视觉设置都在这个文件里 ★
 
-   你不需要懂 React。想改网站长相，改下面这些值就行，改完全站立刻生效。
+   你不需要懂 React。想改网站长相，改下面 @theme 里的值就行，改完全站立刻生效。
 
-   最常改的三个地方：
-     ① 紫色 → 搜「品牌色」，改 --color-brand-* 的色值
-     ② 蓝色 → 搜「品牌色」，改 --color-accent-* 的色值
-     ③ 圆角 → 搜「圆角」，改 --radius-card（卡片圆角大小）
+   最常改的四个地方：
+     ① 强调色  → 搜「强调色」，改 --color-accent
+     ② 底色    → 搜「底层色」，改 --color-ground / --color-panel
+     ③ 圆角    → 搜「圆角」，改 --radius-*
+     ④ 字号    → 搜「排版」，改 --text-* 那几行
 
-   色值格式是 #RRGGBB（十六进制）。想找颜色可以去搜「颜色选择器」，
-   随便挑一个，把 # 开头的六位字符复制过来替换即可。
+   色值格式是 #RRGGBB（十六进制）。想找颜色可以去搜「颜色选择器」。
+
+   ── 深色 / 浅色是怎么切换的（重要，改之前先看这段）────────────────────
+   全站只有「一套」颜色名字，比如 --color-ground（整页底色）、--color-fg（正文色）。
+   深色和浅色是给同一批名字赋两组不同的值：
+
+       :root          → 深色（默认）
+       html:not(.dark) → 浅色（覆盖上面那批值）
+
+   <html> 上的 .dark 类由 index.html 里的脚本按系统设置挂上。
+   好处是：组件里完全不用写 dark: 前缀，改配色只要改这一个文件。
+
+   ── 这个网站长什么样（设计说明）────────────────────────────────────────
+   方向：开发者工具风（参考 linear.app / vercel.com 这类产品站的克制感）。
+   和市面上常见的个人主页不同，这里刻意不用「居中大标题 + 渐变字 + 两个按钮」
+   那套模板，而是靠四样东西立住：
+     · 发丝边框   1px 半透明描边，用来分割内容，不靠一堆大圆角卡片
+     · 等宽字     所有数字、日期、版本号、标签都用等宽字，像产品规格表
+     · 单一强调色 紫色只在"可点""选中""当前"这些地方出现，占屏面积 < 5%
+     · 深色优先   默认深色，浅色是配套的另一种呈现
+
+   深色不是随便挑的黑：它对齐了作者自己两个手表 App 的配色
+   （腕上音符 #1E1E1E、腕能图库 #1C1C1E），所以网站和作品看起来是一套东西。
    ============================================================================ */
 
 @import 'tailwindcss';
 
-/* 让 dark: 前缀跟着 <html class="dark"> 走（跟随系统，见 index.html） */
+/* 让 dark: 前缀跟着 <html class="dark"> 走。
+   现在组件里基本用不到 dark:，但留着，以后想给个别地方单独写例外时能用。 */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* ── 字体 ──────────────────────────────────────────────────────────
-     优先用系统自带字体，所以网站上不加载任何网络字体，打开就是满速。 */
+  /* ── 排版 ────────────────────────────────────────────────────────────
+     ⚠️ 这里刻意不加载任何网络字体：整站零外部请求，打开就是满速。
+     所以字体栈用系统自带的。为了不让它显得"没设计过"，
+     层级不靠字体本身，而靠字号跨度、字重、字距和等宽/非等宽对比来做。 */
   --font-sans:
     system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC',
     'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
   --font-mono:
-    ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas,
-    'Courier New', monospace;
+    ui-monospace, 'Cascadia Mono', 'SF Mono', 'JetBrains Mono', Consolas,
+    'Liberation Mono', monospace;
 
-  /* ── 品牌色（紫色，主色）───────────────────────────────────────────
-     这是全站出现最多的颜色：标题、按钮、链接、进度条。 */
-  --color-brand-50: #f2f2ff;
-  --color-brand-100: #e6e6ff;
-  --color-brand-200: #d0d0ff;
-  --color-brand-300: #b0b0ff;
-  --color-brand-400: #8f8fff;
-  --color-brand-500: #6366f1; /* ← 主色，改这个最主要 */
-  --color-brand-600: #5457d6;
-  --color-brand-700: #4547ab;
-  --color-brand-800: #383a86;
-  --color-brand-900: #2e2f6b;
-  --color-brand-950: #1d1e42;
+  /* 字号阶。跨度拉大才有层级感。 */
+  --text-display: clamp(2.5rem, 6.5vw, 4rem); /* 首屏名字 */
+  --text-h2: clamp(1.375rem, 2.6vw, 1.75rem); /* 区块标题 */
+  --text-h3: 1.0625rem; /* 项目标题 */
+  --text-body: 0.9375rem; /* 正文 15px */
+  --text-small: 0.8125rem; /* 次要说明 13px */
+  --text-micro: 0.6875rem; /* 等宽小标注 11px */
 
-  /* ── 品牌色（蓝色，副色）───────────────────────────────────────────
-     和上面的紫色一起组成网站的渐变（紫 → 蓝）。 */
-  --color-accent-300: #c4b5fd;
-  --color-accent-400: #a78bfa;
-  --color-accent-500: #8b5cf6; /* ← 副色，改这个最主要 */
-  --color-accent-600: #7c3aed;
-  --color-accent-700: #6d28d9;
-  --color-accent-800: #5b21b6;
-  --color-accent-900: #4c1d95;
+  /* ── 圆角 ────────────────────────────────────────────────────────────
+     按用途分三档，不要乱用。整体偏"精密"，所以最大只到 12px，
+     再大就会变成那种到处圆滚滚的通用卡片风。 */
+  --radius-sm: 4px; /* 小控件：标签、输入框 */
+  --radius-md: 8px; /* 中控件：按钮、截图 */
+  --radius-lg: 12px; /* 大面板：整块内容区 */
 
-  /* ── 圆角 ──────────────────────────────────────────────────────────
-     SAChat 用的是 Material 3 的大圆角卡片，这里跟上。
-     想让卡片更方一点就把 card 改小，想更圆就改大。 */
-  --radius-card: 1rem; /* 卡片圆角 */
-  --radius-chip: 0.5rem; /* 小标签圆角 */
+  /* ══ 颜色：这里写的是「深色」（默认呈现）══════════════════════════
+     ⚠️ 颜色必须定义在这个 @theme 块里，不能写到外面的 :root。
+     原因：Tailwind v4 只会为 @theme 里的令牌生成工具类
+     （bg-ground / text-fg-soft / border-hair …），写到外面那些类根本不会存在。
 
-  /* ── 文字颜色（浅色模式）────────────────────────────────────────── */
-  --color-ink: #18181b; /* 主要文字 */
-  --color-ink-soft: #3f3f46; /* 次要文字 */
-  --color-ink-muted: #71717a; /* 更淡的说明文字 */
+     浅色的值在文件下方 html:not(.dark) 里覆盖同一批变量名。
+     名字只定义一次，组件里因此完全不用写 dark: 前缀。 */
 
-  /* ── 文字颜色（深色模式）────────────────────────────────────────── */
-  --color-ink-dark: #f4f4f5;
-  --color-ink-soft-dark: #d4d4d8;
-  --color-ink-muted-dark: #a1a1aa;
+  /* 底层色 —— 对齐作者手表 App 的 #1E1E1E / #1C1C1E，整体再压深一档，
+     这样面板浮起来才有层次。带一点点暖调，不是纯中性灰。 */
+  --color-ground: #0a0a0b; /* 整页背景 */
+  --color-panel: #131315; /* 卡片/面板背景 */
+  --color-raised: #1a1a1d; /* 面板里再嵌一层 / hover 底 */
+  --color-hair: #26262a; /* 发丝边框（全站主要的分隔手段） */
+  --color-hair-soft: #1c1c1f; /* 更弱的边框、列表分隔线 */
 
-  /* ── 背景与边框（浅色模式）──────────────────────────────────────── */
-  --color-page: #ffffff; /* 整页背景 */
-  --color-surface: #fafafa; /* 卡片背景 */
-  --color-surface-2: #f4f4f5; /* 卡片里再嵌一层的背景 */
-  --color-edge: #e4e4e7; /* 边框线 */
+  /* 文字 */
+  --color-fg: #f2f2f3; /* 主要文字 */
+  --color-fg-soft: #a6a6ae; /* 次要文字 */
+  --color-fg-muted: #6d6d77; /* 更淡的说明 */
 
-  /* ── 背景与边框（深色模式）──────────────────────────────────────── */
-  --color-page-dark: #09090b;
-  --color-surface-dark: #131316;
-  --color-surface-2-dark: #1c1c21;
-  --color-edge-dark: #2a2a31;
+  /* 强调色（作者原来选的紫蓝色，但用法收紧了：
+     只在"当前项 / 链接 / 选中态 / 小圆点"上出现，不再做大面积渐变底） */
+  --color-accent: #8b8cf0; /* ← 主强调色，改这个最主要 */
+  --color-accent-soft: #a5a6ff; /* hover 时更亮 */
+  --color-accent-dim: #4a4b8f; /* 边框、暗态 */
+  --color-accent-wash: #17172a; /* 强调色的极淡底（选中行背景） */
+  --color-on-accent: #0a0a0b; /* 压在强调色实底上的文字色 */
+
+  /* 语义色：只在真正表达状态时用，不要拿来装饰 */
+  --color-warn: #d9a441;
+
+  /* ── 背景氛围层（Backdrop.jsx 用）────────────────────────────────────
+     --grid-line 故意做得极淡（深色下是 4% 白）。想更明显就调高，想要更干净就调低。
+     --grid-size 是网格间距，40px 看着像"工程图纸"，再密就变噪点了。 */
+  --grid-line: rgb(255 255 255 / 0.028);
+  --grid-size: 40px;
 }
 
 /* ============================================================================
-   以下是全局样式，一般不用改
+   浅色模式：覆盖上面那批变量名。
+   —— 不是把深色反相，而是另一套：白底 + 极淡灰面板，层次靠边框和底色差。
+
+   ⚠️ 必须写在 :root 上（和 @theme 落在同一个元素），
+   否则优先级不够，覆盖不掉上面那份深色值。
+   下面用了 html:not(.dark) 这个选择器，优先级的 (0,1,1) 高于 :root 的 (0,1,0)。
+   ============================================================================ */
+html:not(.dark) {
+  --color-ground: #fbfbfc;
+  --color-panel: #ffffff;
+  --color-raised: #f4f4f6;
+  --color-hair: #e3e3e8;
+  --color-hair-soft: #eeeef1;
+
+  --color-fg: #16161a;
+  --color-fg-soft: #54545d;
+  --color-fg-muted: #8a8a94;
+
+  --color-accent: #5758d6;
+  --color-accent-soft: #4344bd;
+  --color-accent-dim: #b9b9ea;
+  --color-accent-wash: #f1f1fc;
+  --color-on-accent: #ffffff;
+
+  --color-warn: #a97a12;
+
+  /* 浅色下网格线要改成深色，否则白底上看不见 */
+  --grid-line: rgb(0 0 0 / 0.035);
+}
+
+/* ============================================================================
+   全局基础样式，一般不用改
    ============================================================================ */
 
 @layer base {
   html {
     /* 点页面内的锚点链接（比如导航栏跳转）时平滑滚动 */
     scroll-behavior: smooth;
-    /* 导航栏是吸顶的，滚动定位时留出它的高度，避免标题被挡住 */
+    /* 导航栏是吸顶的，点锚点跳转时留出它的高度，避免标题被挡住。
+       导航栏 h-14 = 3.5rem，再加 1.5rem 余量，标题上方不会贴太紧。 */
     scroll-padding-top: 5rem;
+
+    /* ⚠️ 底色只能铺在 html 上，**不要**再给 body 上背景色。
+       原因：背景氛围层（Backdrop.jsx）是 fixed + 负 z-index 的一层，
+       而 body 的背景色绘制在"负 z-index 子元素"**之前** ——
+       一旦 body 有不透明背景色，整层氛围就被盖得一干二净
+       （实测现象：加了背景层，截图里却纯黑一片，什么都看不到）。
+       放在 html 上，html 的底色绘制在 Backdrop 之前，氛围层才能露出来。 */
+    background-color: var(--color-ground);
   }
 
   body {
-    /* 浅色模式下的整页背景和文字色 */
-    background-color: var(--color-page);
-    color: var(--color-ink);
+    /* 刻意不写 background-color，理由见上面 html 的注释 */
+    color: var(--color-fg);
     font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  /* 深色模式覆盖 */
-  .dark body {
-    background-color: var(--color-page-dark);
-    color: var(--color-ink-dark);
+  /* 标题默认收紧字距。大字号不收紧会显得松垮，这是排版基本功。 */
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
-  /* 尊重系统的「减少动态效果」设置：开了就不做动画 */
+  p {
+    text-wrap: pretty;
+  }
+
+  /* 键盘 Tab 时的焦点圈。默认轮廓在深色底上几乎看不见，必须自定义。 */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  /* 滚动条也做细一点，和整体"精密"的调子一致 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-hair) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-hair);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-fg-muted);
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* 尊重系统的「减少动态效果」设置：开了就全部不动
+     （iteration-count 必须一起限成 1，否则无限循环的动画会变成疯狂重绘） */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -115,28 +223,359 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
   }
 }
 
-/* 紫 → 蓝渐变文字，用在名字和标题上 */
-@utility grad-text {
-  background-image: linear-gradient(
-    110deg,
-    var(--color-brand-500),
-    var(--color-accent-500)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+/* ============================================================================
+   工具类
+   —— 几个反复用到的组合，抽出来免得在每个组件里重复写一长串 class。
+      在标签上用 className="spec" / "num" / "panel" / "shell" 即可。
+   ============================================================================ */
+
+/* 等宽小标注：区块编号、日期、版本号、标签都用它。
+   这是整站"产品规格表"气质的主要来源，不要改成普通字体。 */
+@utility spec {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
 
-/* 紫 → 蓝渐变背景，用在按钮和色条上 */
-@utility grad-bg {
-  background-image: linear-gradient(
-    110deg,
-    var(--color-brand-500),
-    var(--color-accent-500)
-  );
+/* 数字/英文用等宽并锁定等宽数字，让多行数字对齐时不会左右跳 */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 面板：全站统一的那种"浮在底色上的一层"。
+   靠发丝边框区分层次，不用阴影（阴影是 AI 味的重灾区之一）。 */
+@utility panel {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-hair);
+}
+
+/* 内容最大宽度。想改整页的宽窄，改这一个值。
+   1184px 是为了让"左文右图"的作品区块能并排放下，又不至于一行太长读不动。 */
+@utility shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 74rem;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 640px) {
+  .shell {
+    padding-inline: 2rem;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   背景氛围层（Backdrop.jsx）
+   —— 全站铺在最底下的三层：极光光晕 + 网格 + 颗粒。
+
+   为什么加这一层：
+     原来整页是纯色底，干净但"平"，进来没有记忆点。
+     加一层缓慢流动的极光后，页面有了纵深和"活着"的感觉。
+
+   三条自我约束（不守就会变成廉价的科技感）：
+     1. 亮度压得极低（光晕 0.10~0.14、网格 0.028）。远看像"底色有呼吸"，
+        而不是"这里有动画"。截图里几乎注意不到，但盯着看会觉得不空。
+     2. 只动 transform 和 opacity（GPU 合成），不动颜色/滤镜。
+        实测大尺寸 + 动画 blur 会让滚动掉帧，所以光晕用径向渐变本身做柔边，
+        不叠 blur。
+     3. 手机上直接关掉（省电、省绘制），系统开「减少动态效果」也全部静止。
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* 光晕的公共部分。--mx / --my 是鼠标视差偏移（单位 px），
+   由 Backdrop.jsx 写在 <html> 上；下面每条动画把它的位移叠加上去。 */
+.aurora-orb {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+  transform: translate3d(var(--mx, 0px), var(--my, 0px), 0);
+}
+
+/* 三条轨迹错开，避免同步显得机械 */
+@keyframes orb-a {
+  0%,
+  100% {
+    transform: translate3d(calc(var(--mx, 0px) + 0px), calc(var(--my, 0px) + 0px), 0) scale(1);
+  }
+  33% {
+    transform: translate3d(calc(var(--mx, 0px) + 7vw), calc(var(--my, 0px) + 5vh), 0) scale(1.12);
+  }
+  66% {
+    transform: translate3d(calc(var(--mx, 0px) - 4vw), calc(var(--my, 0px) + 9vh), 0) scale(0.94);
+  }
+}
+@keyframes orb-b {
+  0%,
+  100% {
+    transform: translate3d(calc(var(--mx, 0px) + 0px), calc(var(--my, 0px) + 0px), 0) scale(1.06);
+  }
+  40% {
+    transform: translate3d(calc(var(--mx, 0px) - 8vw), calc(var(--my, 0px) + 6vh), 0) scale(0.9);
+  }
+  75% {
+    transform: translate3d(calc(var(--mx, 0px) + 5vw), calc(var(--my, 0px) - 3vh), 0) scale(1.14);
+  }
+}
+@keyframes orb-c {
+  0%,
+  100% {
+    transform: translate3d(calc(var(--mx, 0px) + 0px), calc(var(--my, 0px) + 0px), 0) scale(0.96);
+  }
+  50% {
+    transform: translate3d(calc(var(--mx, 0px) + 10vw), calc(var(--my, 0px) - 6vh), 0) scale(1.18);
+  }
+}
+
+.orb-a {
+  animation: orb-a 30s ease-in-out infinite;
+}
+.orb-b {
+  animation: orb-b 42s ease-in-out infinite;
+  animation-delay: -14s;
+}
+.orb-c {
+  animation: orb-c 52s ease-in-out infinite;
+  animation-delay: -27s;
+}
+
+/* 网格：发丝级细线，透明度极低。它的作用是给纯色底一点"材质"，
+   让光晕流动时有参照物，否则光晕会显得像屏幕脏了。
+   用 background-image 而不是 DOM 元素，几乎不占绘制成本。 */
+.grid-layer {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  /* 中间清楚、四周淡出，避免整块死板的方格纸 */
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 75%);
+}
+
+/* 颗粒：一层几乎看不见的噪点，消除大面积纯色的"塑料感"。
+   用 SVG 滤镜生成，data URI 内联，不产生网络请求。
+
+   ⚠️ 这里有两个性能开关，别随手调大：
+     · opacity 0.085 —— 试过 0.16，截图体积从 46 KB 涨到 1.46 MB，
+       说明页面变成了"逐像素都在变"的状态，滚动时浏览器要多做很多合成工作。
+       0.085 目视效果几乎一样，但负担小得多。
+     · 不用 mix-blend-mode —— overlay 之类的混合模式会让整层脱离快速合成路径。
+       纯叠加（normal）就够去塑料感了。 */
+.grain-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain-url);
+  opacity: 0.085;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   动画
+   —— 原则：动画只用来表达"状态变了"或营造氛围，不做无意义的装饰。
+      · 氛围层（极光/网格/颗粒）不表示任何状态，纯粹是底色
+      · 入场淡入、hover 反馈、放大查看才是"状态"动画
+      想彻底关掉：系统里开「减少动态效果」即可（见下方 @media）。
+   ════════════════════════════════════════════════════════════════════════ */
+
+@keyframes rv-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rv-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 手机端菜单展开 */
+@keyframes menu-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 放大看大图的遮罩淡入淡出、图片缩放进出 */
+@keyframes lb-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes lb-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes lb-img-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes lb-img-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@layer components {
+  /* ── 滚动进场（src/components/Reveal.jsx 使用）────────────────────
+     .rv            进入视口前：下移一点 + 透明
+     .rv-in         进入视口后由 Reveal.jsx 加上 → 淡入归位
+     .stagger       加了它的元素，直接子元素按各自的 --sd 依次出现     */
+  .rv {
+    transform: translateY(12px);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0ms);
+  }
+  .rv:not(.stagger) {
+    opacity: 0;
+    transition:
+      opacity 0.45s ease var(--rv-d, 0ms),
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--rv-d, 0ms);
+  }
+  .rv-in {
+    transform: none;
+  }
+  .rv.rv-in:not(.stagger) {
+    opacity: 1;
+  }
+  .stagger > * {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.45s ease var(--sd, 0ms),
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1) var(--sd, 0ms);
+  }
+  /* 自己带 stagger 的（如 Reveal 根节点），和嵌套在里面的（如下载列表的每一行）都要覆盖到 */
+  .rv-in.stagger > *,
+  .rv-in .stagger > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── 首屏依次入场（Hero.jsx 用，延时写在标签的 animationDelay 上）── */
+  .rise {
+    animation: rv-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ── 放大看大图的进出场（Screenshots.jsx 用）── */
+  .lb-in {
+    animation: lb-in 0.2s ease both;
+  }
+  .lb-out {
+    animation: lb-out 0.15s ease both;
+  }
+  .lb-img-in {
+    animation: lb-img-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .lb-img-out {
+    animation: lb-img-out 0.15s ease both;
+  }
+
+  /* ── 手机端菜单展开 + 遮罩淡入（Nav.jsx 用）── */
+  .menu-in {
+    animation: menu-down 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .fade-in {
+    animation: rv-fade 0.2s ease both;
+  }
+
+  /* ── 链接下划线：hover 时从左往右长出来 ──
+     比直接变色更克制，也不会让整行文字在 hover 时"跳"一下。 */
+  .ul-grow {
+    position: relative;
+  }
+  .ul-grow::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ul-grow:hover::after,
+  .ul-grow:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* ══ 系统开了「减少动态效果」：所有东西直接显示，一点都不动 ══ */
+  @media (prefers-reduced-motion: reduce) {
+    .rv,
+    .stagger > * {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .rise,
+    .lb-in,
+    .lb-out,
+    .lb-img-in,
+    .lb-img-out,
+    .menu-in,
+    .fade-in {
+      animation: none !important;
+    }
+    .ul-grow::after {
+      transition: none !important;
+    }
+    /* 背景氛围层：极光停在初始位置，网格和颗粒保留（它们本来就是静止的） */
+    .orb-a,
+    .orb-b,
+    .orb-c {
+      animation: none !important;
+    }
+  }
+
+  /* ══ 手机上关掉会动的部分 ══
+     小屏上极光本来就看不出流动，却要一直重绘，纯属浪费电。
+     注意：只关动画，不关图层 —— 静态的光晕和网格在手机上一样好看。 */
+  @media (max-width: 640px) {
+    .orb-a,
+    .orb-b,
+    .orb-c {
+      animation: none !important;
+    }
+  }
 }
